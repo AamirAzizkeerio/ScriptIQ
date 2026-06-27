@@ -1,0 +1,6 @@
+{
+  "name": "ScriptIQ",
+  "description": "Frontend-only AI SaaS website for generating YouTube scripts, SEO-optimized titles, descriptions, and keywords.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
