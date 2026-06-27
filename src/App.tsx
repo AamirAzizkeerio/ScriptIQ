@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { PageView } from './types';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -86,6 +87,9 @@ export default function App() {
       {showMainChrome && (
         <Footer onNavigate={handleNavigation} density={density} />
       )}
+
+      {/* Vercel Speed Insights */}
+      <SpeedInsights />
     </div>
   );
 }
