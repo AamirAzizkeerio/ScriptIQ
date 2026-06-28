@@ -13,19 +13,17 @@ import SignInView from './components/SignInView';
 import { PrivacyView, TermsView, RefundView } from './components/LegalViews';
 import NotFoundView from './components/NotFoundView';
 import YoutubeTitleGeneratorView from './components/YoutubeTitleGeneratorView';
+import CookieBanner from './components/CookieBanner';
 
 export default function App() {
   const [view, setView] = useState<PageView>('home');
   const [userEmail, setUserEmail] = useState('amirkeerio3@gmail.com');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
 
-  // Handle cross-page and single-page navigation and scrolling
   const handleNavigation = (targetView: PageView, sectionId?: string) => {
     setView(targetView);
-    
     if (sectionId) {
       if (targetView === 'home') {
-        // If already on home, scroll immediately
         setTimeout(() => {
           const element = document.getElementById(sectionId);
           if (element) {
@@ -34,21 +32,19 @@ export default function App() {
         }, 100);
       }
     } else {
-      // Scroll to top when changing pages
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   };
 
-  // Scroll to top on standard page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [view]);
 
-  // Determine if general layout chrome (Navbar & Footer) should be shown
   const showMainChrome = view !== 'dashboard' && view !== 'signin';
 
   return (
     <div className={`min-h-screen bg-white font-sans text-black selection:bg-[#4F46E5]/10 selection:text-[#4F46E5] ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>
+
       {/* 1. Global Navigation header */}
       {showMainChrome && (
         <Navbar currentView={view} onNavigate={handleNavigation} density={density} onSetDensity={setDensity} />
@@ -86,7 +82,10 @@ export default function App() {
       {showMainChrome && (
         <Footer onNavigate={handleNavigation} density={density} />
       )}
+
+      {/* 4. Cookie Banner */}
+      <CookieBanner />
+
     </div>
   );
 }
-
