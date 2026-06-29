@@ -23,6 +23,50 @@ function getViewFromPath(): PageView {
   return 'notfound';
 }
 
+function setBreadcrumb(view: PageView) {
+  const existing = document.getElementById('breadcrumb-schema');
+  if (existing) existing.remove();
+
+  if (view === 'home') return;
+
+  const labels: Partial<Record<PageView, string>> = {
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
+    refund: 'Refund Policy',
+    'title-generator': 'YouTube Title Generator',
+    signin: 'Sign In',
+    dashboard: 'Dashboard',
+  };
+
+  const label = labels[view];
+  if (!label) return;
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://al5sm.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": label,
+        "item": `https://al5sm.com/${view}`
+      }
+    ]
+  };
+
+  const script = document.createElement('script');
+  script.id = 'breadcrumb-schema';
+  script.type = 'application/ld+json';
+  script.text = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
 export default function App() {
   const [view, setView] = useState<PageView>(getViewFromPath);
   const [userEmail, setUserEmail] = useState('amirkeerio3@gmail.com');
@@ -47,6 +91,7 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    setBreadcrumb(view);
   }, [view]);
 
   useEffect(() => {
