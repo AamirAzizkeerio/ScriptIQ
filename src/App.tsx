@@ -2,7 +2,6 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-
 import React, { useState, useEffect } from 'react';
 import { PageView } from './types';
 import Navbar from './components/Navbar';
@@ -20,8 +19,21 @@ export default function App() {
   const [userEmail, setUserEmail] = useState('amirkeerio3@gmail.com');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
 
+  // ✅ On first load, read the URL path and set the correct view
+  useEffect(() => {
+    const path = window.location.pathname.replace('/', '');
+    const validViews: PageView[] = ['privacy', 'terms', 'refund', 'title-generator', 'signin', 'dashboard'];
+    if (validViews.includes(path as PageView)) {
+      setView(path as PageView);
+    }
+  }, []);
+
   const handleNavigation = (targetView: PageView, sectionId?: string) => {
     setView(targetView);
+    // ✅ Update the browser URL without a page reload
+    const path = targetView === 'home' ? '/' : `/${targetView}`;
+    window.history.pushState({}, '', path);
+
     if (sectionId) {
       if (targetView === 'home') {
         setTimeout(() => {
@@ -40,16 +52,29 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [view]);
 
+  // ✅ Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace('/', '');
+      const validViews: PageView[] = ['privacy', 'terms', 'refund', 'title-generator', 'signin', 'dashboard'];
+      if (validViews.includes(path as PageView)) {
+        setView(path as PageView);
+      } else {
+        setView('home');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const showMainChrome = view !== 'dashboard' && view !== 'signin';
 
   return (
     <div className={`min-h-screen bg-white font-sans text-black selection:bg-[#4F46E5]/10 selection:text-[#4F46E5] ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>
-
       {/* 1. Global Navigation header */}
       {showMainChrome && (
         <Navbar currentView={view} onNavigate={handleNavigation} density={density} onSetDensity={setDensity} />
       )}
-
       {/* 2. Main Page views */}
       <main className="transition-all duration-150 ease-in-out">
         {view === 'home' && (
@@ -77,15 +102,12 @@ export default function App() {
           <YoutubeTitleGeneratorView onNavigate={handleNavigation} density={density} />
         )}
       </main>
-
       {/* 3. Global Footer */}
       {showMainChrome && (
         <Footer onNavigate={handleNavigation} density={density} />
       )}
-
       {/* 4. Cookie Banner */}
       <CookieBanner />
-
     </div>
   );
 }
